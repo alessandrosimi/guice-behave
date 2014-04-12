@@ -134,7 +134,7 @@ public abstract class AbstractStoryModule extends AbstractTestModule {
 			}
 			
 			protected final String toMessage(Method method, Object[] arguments) {
-				return toMessage.convert(method.getName(), arguments);
+				return toMessage.convert(method.getName(), method, arguments);
 			}
 			
 		}

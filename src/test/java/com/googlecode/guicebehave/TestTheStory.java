@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Ignore;
+import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 import com.google.inject.Inject;
@@ -31,12 +32,14 @@ public class TestTheStory {
 		this_step_has_a_list_of_$1_and_an_array_of_$2(Arrays.asList(1L, 2L), new String[]{"one", "two", "three"});
 		this_step_has_out_of_bound_arguments_$1();
 		this_step_cannot_be_print_$1(new NotPrintableArgument());
+		this_step_should_print_an_object_as_$1(new PrintableBean("name", 1));
+		this_step_should_print_an_object_as_$1_with_missing_value(new PrintableBean("name", 3));
 	}
 
 	private void assertStoryEquals(String story) {
 		assertNotNull(storyPrinter);
 		assertEquals(storyPrinter.className, className);
-		assertEquals(storyPrinter.story, story);
+		assertEquals(story, storyPrinter.story);
 	}
 	
 	void this_is_a_step_with_the_number_$1_as_argument(int numberOfStory) {
@@ -46,14 +49,14 @@ public class TestTheStory {
 	private void assertStepEquals(String step) {
 		assertNotNull(storyPrinter);
 		assertEquals(storyPrinter.className, className);
-		assertEquals(storyPrinter.stepName, step);
+		assertEquals(step, storyPrinter.stepName);
 	}
 	
 	void this_step_checks_the_comma__and_the_string_parameter_$1(String string) {
 		assertStepEquals("This step checks the comma, and the string parameter \"" + string + "\"");
 	}
 	
-	void this_step_has_a_date_$1_as_parameter_an_$2_value(Date date, Object object) {
+	void this_step_has_a_date_$1_as_parameter_an_$2_value(@Theory Date date, Object object) {
 		assertStepEquals("This step has a date " + dateFormat.format(date) + " as parameter an <empty> value");
 	}
 	
@@ -67,6 +70,14 @@ public class TestTheStory {
 	
 	void this_step_cannot_be_print_$1(NotPrintableArgument notPrintableArgument) {
 		assertStepEquals("this step cannot be print  $1");
+	}
+	
+	void this_step_should_print_an_object_as_$1(@Tell("a bean that contains ${name} and ${value}") PrintableBean bean) {
+		assertStepEquals("This step should print an object as a bean that contains \"name\" and 1");
+	}
+	
+	void this_step_should_print_an_object_as_$1_with_missing_value(@Tell("a bean that contains ${name} and ${values}") PrintableBean bean) {
+		assertStepEquals("This step should print an object as a bean that contains \"name\" and " + MethodConverter.ReplaceArguments.FIELD_NOT_FOUND + " with missing value");
 	}
 	
 	@Story
@@ -143,4 +154,26 @@ public class TestTheStory {
 		@Override
 		public String toString() { throw new NullPointerException(); }
 	}	
+	
+	private class PrintableBean {
+		private final String name;
+		private final int value;
+		
+		public PrintableBean(String name, int value) {
+			this.name = name;
+			this.value = value;
+		}
+
+		@SuppressWarnings("unused")
+		public String getName() {
+			return name;
+		}
+
+		@SuppressWarnings("unused")
+		public int getValue() {
+			return value;
+		};
+		
+	}
+
 }

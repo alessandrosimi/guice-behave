@@ -1,6 +1,9 @@
 package com.googlecode.guicebehave;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +19,7 @@ import com.google.inject.Inject;
 
 public interface MethodConverter {
 
-	String convert(String message, Object[] arguments);
+	String convert(String message, Method method, Object[] arguments);
 
 	public static class Global implements MethodConverter {
 		
@@ -30,15 +33,15 @@ public interface MethodConverter {
 		@Inject private SetFirstLetterUpperCase firstLetterUpperCase;
 		
 		@Override
-		public String convert(String message, Object[] args) {
+		public String convert(String message, Method method, Object[] args) {
 			String convertion = message;
 			try {
-				convertion = camelCase.convert(convertion, args);
-				convertion = doubleUnderscore.convert(convertion, args);
-				convertion = underscoreAndDollar.convert(convertion, args);
-				convertion = arguments.convert(convertion, args);
-				convertion = multiSpaces.convert(convertion, args);
-				convertion = firstLetterUpperCase.convert(convertion, args);
+				convertion = camelCase.convert(convertion, method, args);
+				convertion = doubleUnderscore.convert(convertion, method, args);
+				convertion = underscoreAndDollar.convert(convertion, method, args);
+				convertion = arguments.convert(convertion, method, args);
+				convertion = multiSpaces.convert(convertion, method, args);
+				convertion = firstLetterUpperCase.convert(convertion, method, args);
 			} catch (Exception e) {
 				logger.error("Impossiple to convert \"" + message + "\" to a message", e);
 			}
@@ -53,7 +56,7 @@ public interface MethodConverter {
 		private static final String SPACE = " ";
 		
 		@Override
-		public String convert(String message, Object[] arguments) {
+		public String convert(String message, Method method, Object[] arguments) {
 			Matcher m = Pattern.compile(REGEX_CAMEL_CASE).matcher(message);
 			StringBuffer buffer = new StringBuffer();
 			while (m.find()) {
@@ -72,7 +75,7 @@ public interface MethodConverter {
 		private static final String SPACE = " ";
 		
 		@Override
-		public String convert(String message, Object[] arguments) {
+		public String convert(String message, Method method, Object[] arguments) {
 			return message.replaceAll(REGEX_UNDER_SCORE, SPACE).replaceAll(REGEX_DOLLAR, SPACE + REGEX_DOLLAR);
 		}
 		
@@ -84,7 +87,7 @@ public interface MethodConverter {
 		private static final String COMMA = ", ";
 		
 		@Override
-		public String convert(String message, Object[] arguments) {
+		public String convert(String message, Method method, Object[] arguments) {
 			return message.replaceAll(REGEX_DOUBLE_UNDER_SCORE, COMMA);
 		}
 		
@@ -99,7 +102,7 @@ public interface MethodConverter {
 		private static final String SPACE = " ";
 		
 		@Override
-		public String convert(String message, Object[] arguments) {
+		public String convert(String message, Method method, Object[] arguments) {
 			String[] words = message.split(SPACE);
 		    StringBuffer buffer = new StringBuffer();
 		    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -109,8 +112,13 @@ public interface MethodConverter {
 		    		String post = word.replaceAll(REGEX_VARIABLE, REGEX_VARIABLE_POST);
 		    		int index = Integer.parseInt(number) - 1;
 		    		if (index < arguments.length) {
-			    		Object argument = arguments[index];
-		    			word = format(argument, dateFormat) + post;
+		    			Object argument = arguments[index];
+		    			Tell tell = isAnnotationPresent(method, index);
+		    			if (tell != null) {
+		    				word = format(tell, argument, dateFormat) + post;
+		    			} else {
+		    				word = format(argument, dateFormat) + post;
+		    			}
 		    		} else {
 		    			word = ARGUMENT_OUT_OF_BOUND + post;
 		    		}
@@ -118,6 +126,36 @@ public interface MethodConverter {
 		    	buffer.append(SPACE).append(word);
 		    }
 		    return buffer.toString().substring(1);
+		}
+		
+		private Tell isAnnotationPresent(Method method, int index) {
+			Annotation[] annotations = method.getParameterAnnotations()[index];
+			for (Annotation annotation : annotations) {
+				if (annotation instanceof Tell) {
+					return (Tell) annotation;
+				}
+			}
+			return null;
+		}
+		
+		static final String FIELD_NOT_FOUND = "<field_not_found>"; 
+		
+		private String format(Tell tell, Object argument, SimpleDateFormat dateFormat) {
+			String result = tell.value();
+			Pattern pattern = Pattern.compile("\\$\\{(.*?)\\}");
+			Matcher matcher = pattern.matcher(tell.value());
+			while (matcher.find()) {
+				String fieldName = matcher.group(1);
+				try {
+					Field field = argument.getClass().getDeclaredField(fieldName);
+					field.setAccessible(true);
+					String value = format(field.get(argument), dateFormat);
+					result = result.replaceAll("\\$\\{" + fieldName + "\\}", value);
+				} catch (Exception e) {
+					result = result.replaceAll("\\$\\{" + fieldName + "\\}", FIELD_NOT_FOUND);
+				}
+			}
+			return result;
 		}
 	
 		static final String ARGUMENT_NULL = "<empty>";
@@ -168,7 +206,7 @@ public interface MethodConverter {
 		private static final String SPACE = " ";
 		
 		@Override
-		public String convert(String message, Object[] arguments) {
+		public String convert(String message, Method method, Object[] arguments) {
 			return message.trim().replaceAll(REGEX_MULTI_SPACES, SPACE);
 		}
 		
@@ -177,7 +215,7 @@ public interface MethodConverter {
 	public static class SetFirstLetterUpperCase implements MethodConverter {
 
 		@Override
-		public String convert(String message, Object[] arguments) {
+		public String convert(String message, Method method, Object[] arguments) {
 			return message.substring(0, 1).toUpperCase() + message.substring(1);
 		}
 		
