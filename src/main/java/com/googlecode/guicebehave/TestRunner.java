@@ -63,7 +63,7 @@ public class TestRunner extends BlockJUnit4ClassRunner {
 		super(classToRun);
 		injector = getInjector(classToRun);
 		testInterceptors = getInterceptors(classToRun);
-		for(TestInterceptor interceptor : testInterceptors.getInterceptors()) {
+		for (TestInterceptor interceptor : testInterceptors.getInterceptors()) {
 			interceptor.beforeClassCreation(classToRun);
 		}
 	}
@@ -196,12 +196,12 @@ public class TestRunner extends BlockJUnit4ClassRunner {
 	protected final void runChild(FrameworkMethod method, RunNotifier notifier) {
 		EachTestNotifier eachNotifier = makeNotifier(method, notifier);
 		// Ignore Test
-		if(method.getAnnotation(Ignore.class) != null) {
+		if (method.getAnnotation(Ignore.class) != null) {
 			eachNotifier.fireTestIgnored();
 			return;
 		}
 		// Before test
-		for(TestInterceptor interceptor : testInterceptors.getInterceptors()) {
+		for (TestInterceptor interceptor : testInterceptors.getInterceptors()) {
 			interceptor.beforeTestRuns(method.getMethod());
 		}
 		// Start
@@ -220,7 +220,7 @@ public class TestRunner extends BlockJUnit4ClassRunner {
 			eachNotifier.fireTestFinished();
 		}
 		// After test
-		for(TestInterceptor interceptor : testInterceptors.getInterceptors()) {
+		for (TestInterceptor interceptor : testInterceptors.getInterceptors()) {
 			interceptor.afterTestRuns(method.getMethod());
 		}
 	}

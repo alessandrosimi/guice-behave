@@ -42,6 +42,10 @@ public abstract class AbstractTestModule extends AbstractModule {
 		bind(TestInterceptor.Wrapper.class).annotatedWith(Names.named(getClass().getName())).toInstance(interceptors);
 	}
 	
+	/**
+	 * Adds a test interceptor to the tests. The interceptors are executed in order.
+	 * @param interceptor the class of the interceptor.
+	 */
 	protected final void bindTestInterceptor(Class<? extends TestInterceptor> interceptor) {
 		interceptors.addInterceptor(interceptor);
 	}

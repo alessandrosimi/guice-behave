@@ -1,7 +1,7 @@
 package com.googlecode.guicebehave;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -59,8 +59,8 @@ public abstract class TestInterceptor {
 	 */
 	static class Wrapper {
 		
-		private Set<Class<? extends TestInterceptor>> interceptorClasses = new HashSet<Class<? extends TestInterceptor>>();
-		private Set<TestInterceptor> interceptors = new HashSet<TestInterceptor>();
+		private Set<Class<? extends TestInterceptor>> interceptorClasses = new LinkedHashSet<Class<? extends TestInterceptor>>();
+		private Set<TestInterceptor> interceptors = new LinkedHashSet<TestInterceptor>();
 
 		void addInterceptor(Class<? extends TestInterceptor> interceptor) {
 			interceptorClasses.add(interceptor);
