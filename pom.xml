@@ -60,11 +60,4 @@
       </plugin>
     </plugins>
   </build>
-  <!-- DISTRIBUTION REPOSITORIES -->
-  <distributionManagement>
-    <repository>
-      <id>supplier-funding-releases</id>
-      <url>http://maven.ocado.com/nexus/content/repositories/ocado-releases</url>
-    </repository>
-  </distributionManagement>
 </project>
