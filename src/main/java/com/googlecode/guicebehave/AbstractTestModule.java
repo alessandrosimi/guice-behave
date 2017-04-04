@@ -13,10 +13,10 @@ import com.google.inject.name.Names;
  *   }
  * }</pre>
  * <p>The test interceptor allows to run code before the test
- * creation and before and after the single test run.<p>
+ * creation and before and after the single test run.</p>
  * <pre>
  * public class MyTestInterceptor extends TestInterceptor {
- *   public void beforeClassCreation(final Class<?> classToRun) {
+ *   public void beforeClassCreation(final Class&lt;?&gt; classToRun) {
  *     [before class creation]
  *   }
  *   public void beforeTestRuns(final FrameworkMethod method) {

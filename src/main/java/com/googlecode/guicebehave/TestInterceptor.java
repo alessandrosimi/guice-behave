@@ -18,7 +18,7 @@ import com.google.inject.spi.InstanceBinding;
  * the test runs ({@link #afterTestRuns(Method)}).</p>
  * <pre>
  * public class MyInterceptor extends TestInterceptor {
- *   public void beforeClassCreation(Class<?> classToRun) {
+ *   public void beforeClassCreation(Class&lt;?&gt; classToRun) {
  *     ...
  *   }
  *   public void beforeTestRuns(Method method) {
@@ -30,8 +30,8 @@ import com.google.inject.spi.InstanceBinding;
  * }</pre>
  * <p>To allow the test to use the interceptor add a Guice
  * module that extends {@link AbstractTestModule} and call
- * the {@link #bindTestInterceptor(Class)} method with the
- * class of the interceptor created.</p>
+ * the {@link AbstractTestModule#bindTestInterceptor(Class)}
+ * method with the class of the interceptor created.</p>
  * <pre>
  * public class MyModule extends AbstractTestModule {
  *   public void configureTest() {
