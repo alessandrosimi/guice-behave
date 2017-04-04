@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.exemplary.guice</groupId>
     <artifactId>guice-behave</artifactId>
-    <version>0.7</version>
+    <version>1.0.0</version>
     <name>Guice Behave</name>
     <url>http://exemplary.io</url>
     <description>Guice test framework for a better TDD and BDD.</description>

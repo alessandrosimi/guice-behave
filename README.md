@@ -1,5 +1,21 @@
+**Latest release:** 1.0.0<br/>
+**License:** [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
 # Introduction
 Guice-Behave is a test framework for [Google Guice](https://code.google.com/p/google-guice/) applications, created to help writing tests that follow [TDD](http://en.wikipedia.org/wiki/Test-driven_development) and [BDD](http://en.wikipedia.org/wiki/Behavior-driven_development) methodologies. The main idea of the framework is using the language to auto-describe the test avoiding to use other tools or sources.
+
+## How to get it
+
+You can get Guice Behave as a maven dependency.
+
+```xml
+<dependency>
+    <groupId>io.exemplary.guice</groupId>
+    <artifactId>guice-behave</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
 ## How it works
 Create a [Junit 4](http://junit.org/) test and add `RunWith` annotation with `TestRunner` class and the `Modules` annotation.
 ```java
